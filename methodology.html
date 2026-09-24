@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方法论 · Kimi API 逆向研究手册</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+<h1><span>第一部分：研究方法论</span><small>Methodology</small></h1>
+
+<nav class="nav-links">
+<a href="index.html">总览</a>
+<a href="methodology.html">方法论</a>
+<a href="business-map.html">业务地图</a>
+<a href="services.html">服务详解</a>
+<a href="fields.html">字段级调用</a>
+<a href="README.md">README</a>
+</nav>
+
+<h2>1. 协议架构总认知</h2>
+<table>
+<thead><tr><th>协议</th><th>路径</th><th>用途</th><th>特征</th></tr></thead>
+<tbody>
+<tr><td>REST</td><td>/api/*</td><td>账户、设备、文件等外围能力</td><td>Ktor Client + OkHttp, application/json</td></tr>
+<tr><td>Connect-RPC</td><td>/apiv2/*</td><td>所有核心业务（聊天、社区、IM、会员）</td><td>application/connect+json，纯 JSON 无二进制 protobuf</td></tr>
+</tbody>
+</table>
+<p>Chat、Moment、Feed、IM 等全部走 Connect-RPC。研究核心业务即研究 Connect-RPC。</p>
+
+<h3>1.1 proto 包结构（6 大命名空间）</h3>
+<div class="code-block">com.moonshot.kimi.proto
+├── account.gateway.v1
+├── common.*
+├── google.rpc
+├── growth.pay.v1
+├── moment.v1
+├── moment.type.v1
+└── kimi
+    ├── gateway.chat.v1
+    ├── gateway.im.v1
+    ├── gateway.mcp.v1
+    ├── gateway.swarm.v1
+    ├── gateway.trigger.v1
+    ├── gateway.memory.v1
+    ├── gateway.suggest.v1
+    ├── outbox.v1
+    └── chatty.v1</div>
+
+<h2>2. 静态研究方法</h2>
+
+<h3>2.1 反编译工具链</h3>
+<table>
+<thead><tr><th>工具</th><th>产出</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>APKTool M</td><td>smali 代码 + 资源</td><td>拿到全部混淆后的类与方法</td></tr>
+<tr><td>jadx</td><td>近似 Java 源码</td><td>比 smali 可读性高，混淆类仍需还原</td></tr>
+<tr><td>R8 mapping.txt</td><td>混淆映射</td><td>还原混淆类名/方法名的唯一钥匙</td></tr>
+</tbody>
+</table>
+<p>本研究使用 APKTool M 产出 smali，无 mapping.txt，类型还原采用启发式。</p>
+
+<h3>2.2 字符串常量提取 API 全景</h3>
+<p>proto 的 RPC 服务信息没有目录结构，但关键字符串保留在 smali 常量池里：</p>
+<div class="code-block">① 服务名
+grep -rhoE "[a-z0-9_]+\.[a-z0-9_]+\.v[0-9]+\.[A-Za-z0-9]+Service" smali*/ --include="*.smali"
+
+② 方法名（RPC URL）
+grep -rhoE "[A-Za-z0-9_.]+Service/[A-Za-z0-9]+" smali*/ --include="*.smali"
+
+③ message 完整类名
+grep -rhoE "com\.moonshot\.kimi\.proto\.[A-Za-z0-9_.$]+" smali*/ --include="*.smali"
+
+④ 字段名（从 toString() 方法体提取）
+"Feed(feedType=" + v + ", feedId=" + v + ", _moment=" + v + ", _interestCard=" + v + ")"
+
+⑤ 字段类型（从构造函数签名提取）
+.method public constructor &lt;init&gt;(Lor/a6;Ljava/lang/String;Lor/ff;Lor/ra;Lor/ci;)V</div>
+
+<h3>2.3 混淆类还原</h3>
+<p>无 mapping.txt 时，还原依赖三条线索：</p>
+<ul class="doc-list">
+<li><strong>字段名语义</strong>：_moment 字段类型几乎必然是 Moment</li>
+<li><strong>message 类名前缀</strong>：Moment._content → 优先匹配 MomentContent</li>
+<li><strong>cast 字符串</strong>："null cannot be cast to non-null type com.moonshot.kimi.proto.moment.v1.UnMuteResponse" 直接给出映射</li>
+</ul>
+<p>精确还原仍依赖 mapping.txt。已导出混淆类清单（620 个混淆类 + 推测映射）。</p>
+
+<h2>3. 调用方法（Connect-RPC）</h2>
+
+<h3>3.1 请求构造</h3>
+<div class="code-block">POST /apiv2/{服务全限定名}/{方法名}  HTTP/2
+Host: www.kimi.com
+Content-Type: application/connect+json
+Authorization: Bearer {accessToken}
+x-msh-platform: android
+x-msh-device-id: {设备指纹ID}
+x-msh-session-id: {会话ID}
+x-msh-version: 3.0.8
+R-Timezone: GMT+08:00
+
+{"字段名": 值, ...}</div>
+
+<h3>3.2 流式方法</h3>
+<p>Chat、SubscribeMessageStream 等流式方法响应为按行分隔的 JSON 事件流：</p>
+<div class="code-block">{"eventOffset": 1, "type": "heartbeat"}
+{"eventOffset": 2, "type": "chunk", "text": "你好"}
+{"eventOffset": 3, "type": "done"}</div>
+<p>断点续传靠递增 eventOffset。误用 unary 调用流式方法，服务端返回 "event stream, 请使用 stream 方法请求"。</p>
+
+<h3>3.3 认证链</h3>
+<ul class="doc-list">
+<li><strong>Token 获取</strong>：account.gateway.v1 的 LoginWithSMS / LoginWithThirdParty / ScanLoginQRCode</li>
+<li><strong>Token 注入</strong>：Authorization: Bearer {token}，401 时客户端自动 refresh</li>
+<li><strong>风控头</strong>：X-Msh-Shield-Data（TrustDecision 设备指纹）是请求级身份的一部分</li>
+</ul>
+
+<h2>4. 验证方法</h2>
+
+<h3>4.1 静态验证</h3>
+<ul class="doc-list">
+<li>方法名 ↔ Request/Response 类名对应关系</li>
+<li>字段名 ↔ 构造函数参数顺序一致性抽查</li>
+</ul>
+
+<h3>4.2 动态验证</h3>
+<ul class="doc-list">
+<li>手机端：mitmproxy + 自建 CA 证书抓取真实请求</li>
+<li>PC 端：curl 构造请求观察响应</li>
+<li>Hook 端：Frida hook ConnectRpcClient 打印请求/响应</li>
+</ul>
+
+<h3>4.3 边界验证</h3>
+<ul class="doc-list">
+<li>流式 vs unary：对 stream 方法用 unary 调用观察报错文案</li>
+<li>分页：nextPageToken / isLastPage 字段驱动循环翻页</li>
+<li>权限：无 token / 过期 token 访问观察 401 行为</li>
+</ul>
+
+<h2>5. 工具链汇总</h2>
+<div class="toolchain">
+<div class="toolchain-item"><span class="label">反编译</span><span class="value">APKTool M / jadx</span></div>
+<div class="toolchain-item"><span class="label">提取</span><span class="value">grep -rhoE / Python 正则</span></div>
+<div class="toolchain-item"><span class="label">还原</span><span class="value">mapping.txt + 混淆类清单</span></div>
+<div class="toolchain-item"><span class="label">抓包</span><span class="value">mitmproxy / Charles</span></div>
+<div class="toolchain-item"><span class="label">调用</span><span class="value">curl / ConnectRPC 客户端</span></div>
+<div class="toolchain-item"><span class="label">Hook</span><span class="value">Frida</span></div>
+</div>
+
+<footer>
+<div class="footer-bar">
+<span><span class="proto-path">上一页</span> <a href="index.html">总览</a></span>
+<span><span class="proto-path">下一页</span> <a href="business-map.html">业务地图</a></span>
+</div>
+<div class="author-line">本文作者小象 · 开源共建</div>
+</footer>
+
+</div>
+</body>
+</html>
