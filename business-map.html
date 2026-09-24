@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>业务地图 · Kimi API 逆向研究手册</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+<h1><span>第二部分：业务地图</span><small>Business Map</small></h1>
+
+<nav class="nav-links">
+<a href="index.html">总览</a>
+<a href="methodology.html">方法论</a>
+<a href="business-map.html">业务地图</a>
+<a href="services.html">服务详解</a>
+<a href="fields.html">字段级调用</a>
+<a href="README.md">README</a>
+</nav>
+
+<p class="lead">59 个服务按业务域归类，快速定位某个功能走哪个 API。</p>
+
+<table>
+<thead><tr><th>业务域</th><th>服务</th><th>定位</th></tr></thead>
+<tbody>
+<tr><td>账号</td><td>account.gateway.v1.AccountService</td><td>登录/注册/扫码/设备绑定</td></tr>
+<tr><td>核心对话</td><td>kimi.gateway.chat.v1.ChatService<br>kimi.gateway.chat.v1.ChatShareService<br>kimi.gateway.chat.v1.PromptService<br>kimi.chatty.v1.ChattyService</td><td>与 Kimi 对话的主入口<br>聊天分享导出<br>提示词增强/推荐<br>轻量工具调用/打断</td></tr>
+<tr><td>群聊 IM</td><td>kimi.gateway.im.v1.IMService</td><td>多人房间即时通讯</td></tr>
+<tr><td>社区</td><td>moment.v1.*（15 个服务）</td><td>动态/评论/信息流/关注/话题/搜索/通知</td></tr>
+<tr><td>智能体</td><td>kimi.gateway.mcp.v1.OKCService<br>kimi.gateway.mcp.v1.MCPOAuthService<br>kimi.gateway.swarm.v1.SwarmService</td><td>OKC 智能体部署/引用解析<br>MCP 服务器授权<br>多智能体编排</td></tr>
+<tr><td>记忆</td><td>kimi.gateway.memory.v1.*</td><td>长期记忆读写/记忆库/梦境</td></tr>
+<tr><td>任务</td><td>kimi.gateway.trigger.v1.TriggerService</td><td>定时/条件触发</td></tr>
+<tr><td>推荐</td><td>kimi.gateway.suggest.v1.*（3 服务）</td><td>首页展示/弹窗/引导</td></tr>
+<tr><td>内容生产</td><td>kimi.gateway.slides.v1.SlidesService<br>kimi.gateway.tts.v1.TTSService<br>kimi.gateway.converter.v1.ConverterService<br>kimi.gateway.artifact.v1.ArtifactService<br>kimi.gateway.file.v1.FileService</td><td>PPT 生成<br>文字转语音<br>文件/格式转换<br>可运行产物<br>文件解析进度</td></tr>
+<tr><td>商业化</td><td>kimi.gateway.membership.v2.MembershipService<br>kimi.gateway.order.v1.SubscriptionService<br>kimi.gateway.order.v1.GoodsService<br>kimi.gateway.promotionalasset.v1.PromotionalAssetService<br>kimi.gateway.issuance.v1.IssuanceService</td><td>会员等级/权益<br>订阅/续费<br>商品列表<br>促销资产<br>凭证发放</td></tr>
+<tr><td>系统</td><td>kimi.gateway.config.v1.ConfigService<br>kimi.gateway.experiment.v1.ExperimentService<br>kimi.gateway.riskcontrol.v1.RiskControlService<br>kimi.gateway.misc.v1.MiscService<br>kimi.usersetting.v1.UserSettingService</td><td>客户端配置<br>AB 实验<br>风控<br>杂项<br>用户偏好设置</td></tr>
+<tr><td>Claw</td><td>kimi.gateway.claw.v1.ClawService<br>kimi.gateway.claw.v1.ClawSkillService<br>kimi.gateway.claw.v1.ClawFileService</td><td>爪机 Bot 管理<br>远程技能<br>爪机文件</td></tr>
+<tr><td>技能</td><td>kimi.gateway.skill.v1.SkillService<br>kimi.gateway.skill.v1.SkillJobService</td><td>技能市场<br>技能执行任务</td></tr>
+<tr><td>其他</td><td>kimi.gateway.pin.v1.PinService<br>kimi.gateway.context.v1.ContextService<br>kimi.gateway.project.v1.ProjectService<br>kimi.gateway.websites.v1.WebsiteSlugService<br>kimi.gateway.feed.v1.FeedService<br>kimi.gateway.notification.v1.NotificationService<br>kimi.gateway.app.v1.AppService</td><td>置顶<br>会话上下文<br>项目<br>网站别名<br>信息流<br>站内通知<br>应用市场</td></tr>
+<tr><td>离线任务</td><td>kimi.outbox.v1.OutboxService</td><td>离线任务队列</td></tr>
+</tbody>
+</table>
+
+<footer>
+<div class="footer-bar">
+<span><span class="proto-path">上一页</span> <a href="methodology.html">方法论</a></span>
+<span><span class="proto-path">下一页</span> <a href="services.html">服务详解</a></span>
+</div>
+<div class="author-line">本文作者小象 · 开源共建</div>
+</footer>
+
+</div>
+</body>
+</html>
