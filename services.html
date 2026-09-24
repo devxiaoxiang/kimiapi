@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>服务详解 · Kimi API 逆向研究手册</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+<h1><span>第三部分：服务详解</span><small>Services</small></h1>
+
+<nav class="nav-links">
+<a href="index.html">总览</a>
+<a href="methodology.html">方法论</a>
+<a href="business-map.html">业务地图</a>
+<a href="services.html">服务详解</a>
+<a href="fields.html">字段级调用</a>
+<a href="README.md">README</a>
+</nav>
+
+<p class="lead">每个服务按业务定位、典型场景、方法列表详细说明。</p>
+
+<div class="service-card">
+<div class="service-title"><span class="name">account.gateway.v1.AccountService</span><span class="count">11 方法</span></div>
+<p><strong>业务定位：</strong>账号与登录<br><strong>典型场景：</strong>短信/微信/Google 登录、扫码登录、设备注册、Token 刷新</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> BindPhone</div>
+<div class="method-item"><span class="type-badge">unary</span> ConfirmLoginQRCode</div>
+<div class="method-item"><span class="type-badge">unary</span> ListCountries</div>
+<div class="method-item"><span class="type-badge">unary</span> LoginWithOneClick</div>
+<div class="method-item"><span class="type-badge">unary</span> LoginWithSMS</div>
+<div class="method-item"><span class="type-badge">unary</span> LoginWithThirdParty</div>
+<div class="method-item"><span class="type-badge">unary</span> Logout</div>
+<div class="method-item"><span class="type-badge">unary</span> RefreshToken</div>
+<div class="method-item"><span class="type-badge">unary</span> RegisterDevice</div>
+<div class="method-item"><span class="type-badge">unary</span> ScanLoginQRCode</div>
+<div class="method-item"><span class="type-badge">unary</span> SendVerifyCode</div>
+</div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">kimi.chatty.v1.ChattyService</span><span class="count">2 方法</span></div>
+<p><strong>业务定位：</strong>轻量聊天/工具<br><strong>典型场景：</strong>通用工具调用、打断生成</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> GenericTool</div>
+<div class="method-item"><span class="type-badge">unary</span> Interrupt</div>
+</div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">kimi.gateway.app.v1.AppService</span><span class="count">4 方法</span></div>
+<p><strong>业务定位：</strong>应用市场<br><strong>典型场景：</strong>应用发布/版本管理</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> ListVersions</div>
+<div class="method-item"><span class="type-badge">unary</span> PreviewApp</div>
+<div class="method-item"><span class="type-badge">unary</span> PublishApp</div>
+<div class="method-item"><span class="type-badge">unary</span> UnpublishApp</div>
+</div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">kimi.gateway.artifact.v1.ArtifactService</span><span class="count">1 方法</span></div>
+<p><strong>业务定位：</strong>可运行产物<br><strong>典型场景：</strong>分享代码/HTML 产物</p>
+<div class="method-list"><div class="method-item"><span class="type-badge">unary</span> ShareArtifact</div></div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">kimi.gateway.chat.v1.ChatService</span><span class="count">30 方法</span></div>
+<p><strong>业务定位：</strong>核心对话<br><strong>典型场景：</strong>发起对话、继续、恢复、订阅消息流、管理会话、消息赞踩、分享聊天</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> BatchDeleteChats</div>
+<div class="method-item"><span class="type-badge">unary</span> CancelChat</div>
+<div class="method-item"><span class="type-badge">stream</span> Chat</div>
+<div class="method-item"><span class="type-badge">stream</span> ChatFromCase</div>
+<div class="method-item"><span class="type-badge">stream</span> ContinueChat</div>
+<div class="method-item"><span class="type-badge">unary</span> CreateChatShare</div>
+<div class="method-item"><span class="type-badge">unary</span> GetChat</div>
+<div class="method-item"><span class="type-badge">unary</span> GetChatShare</div>
+<div class="method-item"><span class="type-badge">unary</span> GetChatShareMessage</div>
+<div class="method-item"><span class="type-badge">unary</span> GetChatShareScreenshot</div>
+<div class="method-item"><span class="type-badge">unary</span> GetMessage</div>
+<div class="method-item"><span class="type-badge">unary</span> GetUnreadChats</div>
+<div class="method-item"><span class="type-badge">unary</span> ListChats</div>
+<div class="method-item"><span class="type-badge">unary</span> ListMessages</div>
+<div class="method-item"><span class="type-badge">unary</span> MarkChatAsRead</div>
+<div class="method-item"><span class="type-badge">unary</span> MessageSpeech</div>
+<div class="method-item"><span class="type-badge">unary</span> ProcessAskUserResult</div>
+<div class="method-item"><span class="type-badge">unary</span> RegenerateMessage</div>
+<div class="method-item"><span class="type-badge">unary</span> ReplyInteraction</div>
+<div class="method-item"><span class="type-badge">stream</span> ResumeChat</div>
+<div class="method-item"><span class="type-badge">unary</span> ShareChatToCommunity</div>
+<div class="method-item"><span class="type-badge">stream</span> SubscribeMessageStream</div>
+<div class="method-item"><span class="type-badge">unary</span> UpdateChat</div>
+<div class="method-item"><span class="type-badge">unary</span> VoteMessage</div>
+<div class="method-item"><span class="type-badge">unary</span> CreateChatFromShare</div>
+<div class="method-item"><span class="type-badge">unary</span> GetMessageRecommendPrompts</div>
+<div class="method-item"><span class="type-badge">unary</span> GetToolBlock</div>
+<div class="method-item"><span class="type-badge">unary</span> ListKimiPlus</div>
+<div class="method-item"><span class="type-badge">unary</span> ListPinnedKimiPlus</div>
+<div class="method-item"><span class="type-badge">stream</span> ReplayChatShareStream</div>
+</div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">kimi.gateway.chat.v1.ChatShareService</span><span class="count">1 方法</span></div>
+<p><strong>业务定位：</strong>聊天分享导出<br><strong>典型场景：</strong>导出聊天为 Docx</p>
+<div class="method-list"><div class="method-item"><span class="type-badge">unary</span> GetChatShareDocx</div></div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">kimi.gateway.chat.v1.PromptService</span><span class="count">1 方法</span></div>
+<p><strong>业务定位：</strong>提示词增强<br><strong>典型场景：</strong>获取增强提示词</p>
+<div class="method-list"><div class="method-item"><span class="type-badge">unary</span> GetEnhancedPrompts</div></div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">kimi.gateway.claw.v1.ClawService</span><span class="count">4 方法</span></div>
+<p><strong>业务定位：</strong>Claw 爪机 Bot 管理<br><strong>典型场景：</strong>创建/删除 Bot、管理模型 API Key</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> CreateBot</div>
+<div class="method-item"><span class="type-badge">unary</span> CreateModelAPIKey</div>
+<div class="method-item"><span class="type-badge">unary</span> DeleteBot</div>
+<div class="method-item"><span class="type-badge">unary</span> ListBots</div>
+</div>
+</div>
+
+<h2>社区服务详解</h2>
+
+<div class="service-card">
+<div class="service-title"><span class="name">moment.v1.ChatService</span><span class="count">5 方法</span></div>
+<p><strong>业务定位：</strong>社区内聊天<br><strong>典型场景：</strong>从动态发起聊天、获取最近聊天、重新聊天</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> CreateChatV2</div>
+<div class="method-item"><span class="type-badge">unary</span> GetLastChatV2</div>
+<div class="method-item"><span class="type-badge">unary</span> GetOriginalMessageCount</div>
+<div class="method-item"><span class="type-badge">unary</span> GetRawShareChatV2</div>
+<div class="method-item"><span class="type-badge">stream</span> ReChat</div>
+</div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">moment.v1.CommentService</span><span class="count">5 方法</span></div>
+<p><strong>业务定位：</strong>社区评论系统<br><strong>典型场景：</strong>发评论、删评论、看评论列表与楼中楼、评论点赞</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> CreateComment</div>
+<div class="method-item"><span class="type-badge">unary</span> DeleteComment</div>
+<div class="method-item"><span class="type-badge">unary</span> ListComments</div>
+<div class="method-item"><span class="type-badge">unary</span> ListSubComments</div>
+<div class="method-item"><span class="type-badge">unary</span> VoteComment</div>
+</div>
+</div>
+
+<div class="service-card">
+<div class="service-title"><span class="name">moment.v1.MomentService</span><span class="count">6 方法</span></div>
+<p><strong>业务定位：</strong>社区动态发布与管理<br><strong>典型场景：</strong>发动态、删动态、点赞、看相似动态、聊天分享卡片</p>
+<div class="method-list">
+<div class="method-item"><span class="type-badge">unary</span> CreateMoment</div>
+<div class="method-item"><span class="type-badge">unary</span> DeleteMoment</div>
+<div class="method-item"><span class="type-badge">unary</span> GetChatShareCard</div>
+<div class="method-item"><span class="type-badge">unary</span> ListMomentAskKimiQuestions</div>
+<div class="method-item"><span class="type-badge">unary</span> ListSimilarMoments</div>
+<div class="method-item"><span class="type-badge">unary</span> VoteMoment</div>
+</div>
+</div>
+
+<p>其他社区服务：FavoriteService, FeedService, FollowService, HashtagService, InterestService, MuteService, NotificationService, SearchService, UploadService, UserService, ComplaintService, ConfigService 等。</p>
+
+<footer>
+<div class="footer-bar">
+<span><span class="proto-path">上一页</span> <a href="business-map.html">业务地图</a></span>
+<span><span class="proto-path">下一页</span> <a href="fields.html">字段级调用</a></span>
+</div>
+<div class="author-line">本文作者小象</div>
+</footer>
+
+</div>
+</body>
+</html>
