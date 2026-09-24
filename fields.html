@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字段级调用 · Kimi API 逆向研究手册</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+<h1><span>第四部分：字段级调用详解</span><small>Fields</small></h1>
+
+<nav class="nav-links">
+<a href="index.html">总览</a>
+<a href="methodology.html">方法论</a>
+<a href="business-map.html">业务地图</a>
+<a href="services.html">服务详解</a>
+<a href="fields.html">字段级调用</a>
+<a href="README.md">README</a>
+</nav>
+
+<p class="lead">每个方法列出请求体字段与响应体字段（名称/类型/含义）。类型基于 JVM 签名 + 启发式映射。</p>
+
+<h3>moment.v1.ChatService</h3>
+<h4>CreateChatV2 unary</h4>
+<p><strong>请求 CreateChatV2Request</strong></p>
+<table class="field-table">
+<thead><tr><th>字段</th><th>类型</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>momentId</td><td>string</td><td>动态ID</td></tr>
+<tr><td>chatType</td><td>message(ChatType?)</td><td>chatType</td></tr>
+<tr><td>chatTypeSubKey</td><td>string</td><td>chatTypeSubKey</td></tr>
+<tr><td>askKimiQuestion</td><td>string</td><td>askKimiQuestion</td></tr>
+</tbody>
+</table>
+<p><strong>响应 CreateChatV2Response</strong></p>
+<table class="field-table">
+<thead><tr><th>字段</th><th>类型</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>chatId</td><td>int32</td><td>会话ID</td></tr>
+<tr><td>_chat</td><td>Chat</td><td>chat</td></tr>
+<tr><td>chatType</td><td>message(ChatType?)</td><td>chatType</td></tr>
+<tr><td>chatTypeSubKey</td><td>message(ChatTypeSubKey?)</td><td>chatTypeSubKey</td></tr>
+</tbody>
+</table>
+
+<h4>GetLastChatV2 unary</h4>
+<p><strong>请求 GetLastChatV2Request</strong></p>
+<table class="field-table">
+<thead><tr><th>字段</th><th>类型</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>momentId</td><td>string</td><td>动态ID</td></tr>
+<tr><td>chatType</td><td>message(ChatType?)</td><td>chatType</td></tr>
+<tr><td>chatTypeSubKey</td><td>int32</td><td>chatTypeSubKey</td></tr>
+</tbody>
+</table>
+<p><strong>响应 GetLastChatV2Response</strong></p>
+<table class="field-table">
+<thead><tr><th>字段</th><th>类型</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>chatId</td><td>int32</td><td>会话ID</td></tr>
+<tr><td>chatType</td><td>string</td><td>chatType</td></tr>
+<tr><td>chatTypeSubKey</td><td>message(ChatTypeSubKey?)</td><td>chatTypeSubKey</td></tr>
+</tbody>
+</table>
+
+<h4>ReChat stream</h4>
+<p>流式方法：响应为按行分隔的 JSON 事件流（含 heartbeat/done/chunk 等事件，用 eventOffset 续传），不能按普通 unary 调用。</p>
+<p><strong>请求 ReChatRequest</strong> momentId int32</p>
+<p><strong>响应 ReChatResponse</strong> chatId int32, _chat Chat, chatType, chatTypeSubKey</p>
+
+<h3>moment.v1.CommentService</h3>
+<h4>CreateComment unary</h4>
+<p><strong>请求</strong> momentId int32, mentions string, links string</p>
+<p><strong>响应</strong> _comment Comment</p>
+<h4>DeleteComment unary</h4>
+<p><strong>请求</strong> commentId string &nbsp; <span class="footnote">响应无字段</span></p>
+<h4>ListComments unary</h4>
+<p><strong>请求</strong> momentId int32, _rootCommentId string, _pinnedCommentId string</p>
+<p><strong>响应</strong> nextPageToken string, _pageStat PageStat, isLastPage bool, _pinnedCommentId string, comments repeated</p>
+
+<h3>moment.v1.MomentService</h3>
+<h4>CreateMoment unary</h4>
+<p><strong>请求</strong> text string, visibility string, _artifactShareId string, images repeated, mentions repeated, links repeated, hashtagIds int32</p>
+<p><strong>响应</strong> _moment Moment</p>
+<h4>DeleteMoment unary</h4>
+<p><strong>请求</strong> momentId string &nbsp; <span class="footnote">响应无字段</span></p>
+<h4>GetChatShareCard unary</h4>
+<p><strong>请求</strong> chatShareId string &nbsp; <strong>响应</strong> _chatShareCard ChatShareCard</p>
+
+<h3>kimi.gateway.chat.v1.ChatService</h3>
+<h4>BatchDeleteChats unary</h4>
+<p><strong>请求</strong> chatIds repeated &nbsp; <strong>响应</strong> chatIds int32</p>
+
+<h4>Chat stream</h4>
+<p>流式方法：响应为按行分隔的 JSON 事件流（含 heartbeat/done/chunk 等事件，用 eventOffset 续传）</p>
+<p><strong>请求 ChatRequest</strong> chatId int32, _message ChatMessage, _options string, _projectId string, tools string</p>
+<p><strong>响应 ChatResponse</strong> op, _mask, eventOffset int32, _chat Chat, _message ChatMessage, _block Block, _ref ChatFileRef, _usage Usage, _notification Notification, _done Done, _heartbeat Heartbeat, _tts, _interaction, _interactionAck</p>
+
+<h4>ListChats unary</h4>
+<p><strong>请求</strong> _projectId int32, _withMessageContent string, _includePinned string, pageSize string, pageToken bool</p>
+<p><strong>响应</strong> nextPageToken string, chats repeated, pinnedChats repeated</p>
+
+<h4>ListMessages unary</h4>
+<p><strong>请求</strong> chatId int32, _direction string, _startMessageId int32, _includeStartMessage string, _endMessageId message(EndMessageId?), _includeEndMessage string, _noMarkAsRead bool</p>
+<p><strong>响应</strong> nextPageToken string</p>
+
+<h4>RegenerateMessage unary</h4>
+<p><strong>请求</strong> chatId int32, _message Message, _scenario string, _options string, tools string</p>
+
+<footer>
+<div class="footer-bar">
+<span><span class="proto-path">上一页</span> <a href="services.html">服务详解</a></span>
+<span><span class="proto-path">返回</span> <a href="index.html">总览</a></span>
+</div>
+<div class="author-line">本文作者小象</div>
+</footer>
+
+</div>
+</body>
+</html>
