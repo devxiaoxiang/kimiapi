@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kimi API 逆向研究手册</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+<h1><span>Kimi API 逆向研究手册</span><small>Connect-RPC</small></h1>
+
+<nav class="nav-links">
+<a href="index.html">总览</a>
+<a href="methodology.html">方法论</a>
+<a href="business-map.html">业务地图</a>
+<a href="services.html">服务详解</a>
+<a href="fields.html">字段级调用</a>
+<a href="README.md">README</a>
+</nav>
+
+<div class="meta-row">
+<span><span class="proto-path">研究对象</span> Kimi App Android</span>
+<span><span class="proto-path">数据来源</span> APKTool M 反编译</span>
+<span><span class="proto-path">方法</span> Connect-RPC 字符串常量提取</span>
+</div>
+
+<p class="lead">
+对 Kimi 客户端 API 的全面逆向工程研究。覆盖 59 个 proto 服务、212 个 RPC 方法、609 个 message。
+阐述双协议架构、静态研究方法论、业务地图、服务详解及字段级调用说明。
+</p>
+
+<div class="badge-grid">
+<span>Proto 服务 <strong>59</strong></span>
+<span>RPC 方法 <strong>212</strong></span>
+<span>Message 定义 <strong>609</strong></span>
+<span>命名空间 <strong>6</strong></span>
+</div>
+
+<h2>协议架构</h2>
+<p>Kimi 客户端 API 是双协议架构：</p>
+<table>
+<thead><tr><th>协议</th><th>路径</th><th>用途</th><th>特征</th></tr></thead>
+<tbody>
+<tr><td>REST</td><td>/api/*</td><td>账户、设备、文件等外围能力</td><td>Ktor Client + OkHttp, application/json</td></tr>
+<tr><td>Connect-RPC</td><td>/apiv2/*</td><td>聊天、社区、IM、会员等全部核心业务</td><td>application/connect+json，纯 JSON 无二进制 protobuf</td></tr>
+</tbody>
+</table>
+<p>Chat、Moment、Feed、IM 等核心业务全部走 Connect-RPC。研究核心业务即研究 Connect-RPC。</p>
+
+<h2>命名空间</h2>
+<div class="code-block">com.moonshot.kimi.proto
+├── account.gateway.v1
+├── common.*
+├── google.rpc
+├── growth.pay.v1
+├── moment.v1
+├── moment.type.v1
+└── kimi
+    ├── gateway.chat.v1
+    ├── gateway.im.v1
+    ├── gateway.mcp.v1
+    ├── gateway.swarm.v1
+    ├── gateway.trigger.v1
+    ├── gateway.memory.v1
+    ├── gateway.suggest.v1
+    ├── gateway.claw.v1
+    ├── gateway.order.v1
+    ├── gateway.membership.v2
+    ├── gateway.skill.v1
+    ├── gateway.tts.v1
+    ├── outbox.v1
+    └── chatty.v1</div>
+
+<h2>快速开始</h2>
+<div class="code-block">curl -X POST https://www.kimi.com/apiv2/kimi.gateway.chat.v1.ChatService/ListChats \
+  -H "Content-Type: application/connect+json" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "x-msh-platform: android" \
+  -d '{"pageSize": 20}'</div>
+<p>完整构造方式、流式方法、认证链见 <a href="methodology.html">方法论</a>。</p>
+
+<h2>文档导航</h2>
+<ul class="doc-list">
+<li><a href="methodology.html">方法论</a> — 反编译工具链、字符串提取、混淆还原、调用方式、验证方法</li>
+<li><a href="business-map.html">业务地图</a> — 59 服务按业务域归类</li>
+<li><a href="services.html">服务详解</a> — 每个服务的定位、场景、方法列表</li>
+<li><a href="fields.html">字段级调用</a> — 请求/响应字段名称、类型、含义</li>
+</ul>
+
+<footer>
+<div class="footer-bar">
+<span><span class="proto-path">研究完成</span> 59 服务 · 212 方法 · 609 message</span>
+<span>Kimi API 逆向研究手册</span>
+</div>
+<div class="author-line">本文作者小象</div>
+</footer>
+
+</div>
+</body>
+</html>
